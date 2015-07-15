@@ -1,0 +1,26 @@
+{
+  "name": "js-format",
+  "version": "1.0.0",
+  "description": "data formatting",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsu-complete/js-format.git"
+  },
+  "keywords": [
+    "format",
+    "numeral",
+    "numeric"
+  ],
+  "author": "tsukumo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tsu-complete/js-format/issues"
+  },
+  "homepage": "https://github.com/tsu-complete/js-format#readme",
+  "dependencies": {
+    "datef": "^2.0.0",
+    "mustache": "^2.1.2",
+    "numeral": "^1.5.3"
+  }
+}

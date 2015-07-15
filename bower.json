@@ -1,0 +1,26 @@
+{
+  "name": "js-format",
+  "version": "1.0.0",
+  "homepage": "https://github.com/tsu-complete/js-format",
+  "authors": [
+    "tsukumo"
+  ],
+  "description": "data formatting",
+  "main": "index.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "format",
+    "numeral",
+    "numeric"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "datef": "~0.2.0",
+    "mustache": "~2.1.2",
+    "numeral": "~1.5.3"
+  }
+}
