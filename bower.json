@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "datef": "~0.2.0",
+    "datef": "master",
     "mustache": "~2.1.2",
     "numeral": "~1.5.3"
   }
