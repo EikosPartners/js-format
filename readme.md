@@ -10,7 +10,7 @@ Usage
 ```js
 format("MM.YYYY", new Date());
 
-format("(0.0a)", "-4.0e12", Number);
+format("(0.0a)", "-4.0e12", format.NUMBER);
 
 format("({{status}}!)", { status: "Success" });
 
@@ -20,9 +20,6 @@ var currency_formatter = format.create("($0.00a)", Number, function ( value ) {
 
 currency_formatter(-4000);
 // => ($4.00K)
-
-currency_formatter(-4000, undefined, null);
-// => ($4.00k)
 ```
 
 Vendor

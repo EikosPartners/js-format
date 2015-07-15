@@ -6,7 +6,7 @@
     ,   _old
     ,   _new
     ,   generate = function ( ) {
-            return factory.apply(null, normalize.apply(null, arguments));
+            return factory.call(null, normalize.apply(null, arguments));
         }
     ;
 
@@ -35,10 +35,16 @@
 })(function ( _datef, _numeral, _mustache ) {
     "use strict";
 
-    var datef, numberf, stringf;
+    var datef, numberf, objectf;
 
     datef = function ( format, raw ) {
         return _datef(format, raw);
+    };
+    datef.cast = function ( raw ) {
+        if (!(raw instanceof Date)) {
+            raw = new Date(raw);
+        }
+        return raw;
     };
     datef.i18n = function ( language ) {
         _datef.lang(language);
@@ -47,63 +53,120 @@
     numberf = function ( format, raw ) {
         return _numeral(raw).format(format);
     };
+    numberf.cast = function ( raw ) {
+        if ("number" !== typeof raw) {
+            raw = Number(raw);
+        }
+        return raw;
+    };
     numberf.i18n = function ( language ) {
         _numeral.language(language);
     };
 
-    stringf = function ( format, raw ) {
+    objectf = function ( format, raw ) {
         return _mustache.render(format, raw);
     };
+    objectf.cast = function ( raw ) {
+        return Object(raw);
+    };
 
-    return [ datef, numberf, stringf ];
+    return {
+        date: datef
+    ,   number: numberf
+    ,   object: objectf
+    };
 
-}, function ( datef, numberf, stringf ) {
+}, function ( formatters ) {
     "use strict";
 
-    var _args = Array.prototype.slice.call(arguments)
-    ,   formatter = function ( format, raw, before, after ) {
-            if ("function" === typeof before) {
-                raw = before(raw);
-            }
+    var _normalize, _formatter, formatter, name;
 
-            if (raw instanceof Date) {
-                raw = datef(format, raw);
-            } else if ("number" === typeof raw) {
-                raw = numberf(format, raw);
-            } else if ("object" === typeof raw) {
-                raw = stringf(format, raw);
-            } else {
-                throw new TypeError("format: unsupported type;" + typeof raw);
-            }
+    formatter = function ( format, raw, options, after ) {
+        return _formatter(raw, _normalize(format, options, after));
+    };
 
-            if ("function" === typeof after) {
-                raw = after(raw);
-            }
+    // provide direct formatters and type constants
+    for (name in formatters) {
+        formatter[name.toUpperCase()] = name;
+        formatter[name] = formatters[name];
+    }
 
-            return raw;
-        };
+    _formatter = function ( raw, options ) {
+        if ("function" === typeof options.before) {
+            raw = options.before(raw);
+        }
 
-    formatter.create = function ( format, _before, _after ) {
-        return function ( raw, before, after) {
-            if ("undefined" === typeof before) {
-                before = _before;
+        raw = options.format(raw);
+
+        if ("function" === typeof options.after) {
+            raw = options.after(raw);
+        }
+
+        return raw;
+    };
+
+    _normalize = function ( format, options, after ) {
+        var fn;
+
+        if ("function" === typeof options) {
+            options = {
+                before: options
+            ,   after: after
+            };
+        } else if ("string" === typeof options) {
+            options = {
+                type: options
+            };
+        } else if (!options) {
+            options = { };
+        }
+
+        if (options.type) {
+            fn = formatter[options.type];
+            if ("function" !== typeof fn) {
+                throw new TypeError(
+                    "format: unsupported type;" + options.type);
             }
-            if ("undefined" === typeof after) {
-                after = _after;
-            }
-            return formatter(format, raw, before, after);
+            options.format = function ( raw ) {
+                return fn(format, fn.cast(raw));
+            };
+        } else {
+            options.format = function ( raw ) {
+                var type;
+
+                if (raw instanceof Date) {
+                    type = formatter.DATE;
+                } else if ("number" === typeof raw) {
+                    type = formatter.NUMBER;
+                } else if ("object" === typeof raw) {
+                    type = formatter.OBJECT;
+                }
+
+                type = formatter[type];
+                if (!type) {
+                    throw new TypeError(
+                        "format: unsupported type;" + options.type);
+                }
+
+                return type(format, raw);
+            };
+        }
+
+        return options;
+    };
+
+    formatter.create = function ( format, options, after ) {
+        options = _normalize(format, options, after);
+
+        return function ( raw ) {
+            return _formatter(raw, options);
         };
     };
 
-    // provide direct formatters
-    formatter.datef   = datef;
-    formatter.numberf = numberf;
-    formatter.stringf = stringf;
-
     formatter.i18n = function ( language ) {
-        _args.forEach(function ( arg ) {
-            if ("function" === typeof arg.i18n) {
-                arg.i18n(language);
+        formatters.forEach(function ( formatter ) {
+            if ("function" === typeof formatter.i18n) {
+                formatter.i18n(language);
             }
         });
     };
