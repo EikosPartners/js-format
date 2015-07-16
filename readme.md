@@ -1,7 +1,9 @@
 
-js-format
+js-format [![LICENSE](https://img.shields.io/github/license/tsu-complete/js-format.svg)](https://github.com/tsu-complete/js-format/blob/master/LICENSE)
 ===
 [![Codacy Badge](https://www.codacy.com/project/badge/fe402d05a90245b2848a3fee4171f0e1)](https://www.codacy.com/app/tsu-complete/js-format)
+[![Dependencies](https://david-dm.org/tsu-complete/js-format.svg)](https://david-dm.org/tsu-complete/js-format)
+[![Dev Dependencies](https://david-dm.org/tsu-complete/js-format/dev-status.svg)](https://david-dm.org/tsu-complete/js-format#info=devDependencies)
 
 > data formatting
 
@@ -37,14 +39,4 @@ Vendor
 ### String formatting
 
 [Mustache](https://github.com/janl/mustache.js)
-
-License
----
-
-MIT (see [LICENSE](https://github.com/tsu-complete/js-format/blob/master/LICENSE))
-
-Linting
----
-
-Linted with jshint
 
