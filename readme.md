@@ -1,6 +1,7 @@
 
 js-format
 ===
+[![Codacy Badge](https://www.codacy.com/project/badge/fe402d05a90245b2848a3fee4171f0e1)](https://www.codacy.com/app/tsu-complete/js-format)
 
 > data formatting
 
