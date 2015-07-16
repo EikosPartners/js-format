@@ -5,3 +5,7 @@
 - remove created formatter option overriding
 - improve performance by pre-compiling options in create
 
+# v2.0.1
+
+- code health improvements
+
