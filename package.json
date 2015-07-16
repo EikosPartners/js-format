@@ -7,6 +7,10 @@
     "type": "git",
     "url": "git+https://github.com/tsu-complete/js-format.git"
   },
+  "scripts": {
+    "lint": "jshint index.js",
+    "hint": "npm run lint"
+  },
   "keywords": [
     "format",
     "numeral",
@@ -22,5 +26,8 @@
     "datef": "^2.0.0",
     "mustache": "^2.1.2",
     "numeral": "^1.5.3"
+  },
+  "devDependencies": {
+    "jshint": "^2.8.0"
   }
 }
