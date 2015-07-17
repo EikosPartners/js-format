@@ -79,17 +79,19 @@
 }, function ( formatters ) {
     "use strict";
 
-    var _normalize, _formatter, formatter;
+    var _normalize, _formatter, formatter, name;
 
     formatter = function ( format, raw, options, after ) {
         return _formatter(raw, _normalize(format, options, after));
     };
 
     // provide direct formatters and type constants
-    formatters.forEach(function ( name ) {
-        formatter[name.toUpperCase()] = name;
-        formatter[name] = formatters[name];
-    });
+    for (name in formatters) {
+        if (formatters.hasOwnProperty(name)) {
+            formatter[name.toUpperCase()] = name;
+            formatter[name] = formatters[name];
+        }
+    }
 
     _formatter = function ( raw, options ) {
         if ("function" === typeof options.before) {
