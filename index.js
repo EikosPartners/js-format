@@ -102,26 +102,29 @@
         }
     }
 
-    _audit = function ( options, raw, phase, unless ) {
+    _audit = function ( options, raw, phase ) {
+        var temp;
+
         if ("function" === typeof options.audit) {
-            raw = options.audit(raw, phase);
-            if (raw == null) {
-                return unless;
+            temp = options.audit(raw, phase);
+            if (temp != null) {
+                raw = temp;
             }
         }
+
         return raw;
     };
 
     _formatter = function ( raw, options ) {
-        raw = _audit(options, raw, formatter.PHASE_0, raw);
+        raw = _audit(options, raw, formatter.PHASE_0);
 
         raw = options.cast(raw);
 
-        raw = _audit(options, raw, formatter.PHASE_1, raw);
+        raw = _audit(options, raw, formatter.PHASE_1);
 
         raw = options.format(raw);
 
-        raw = _audit(options, raw, formatter.PHASE_2, "");
+        raw = _audit(options, raw, formatter.PHASE_2);
 
         return raw;
     };
