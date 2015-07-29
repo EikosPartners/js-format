@@ -19,3 +19,7 @@
 - replace with audit and phases
 - change normalization from functions to objects
 
+# v3.1.0
+
+- replace datef with moment
+

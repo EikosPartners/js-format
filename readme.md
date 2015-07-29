@@ -49,7 +49,7 @@ Vendor
 
 ### Date formatting
 
-[datef](https://github.com/hogart/datef)
+[Moment](https://github.com/moment/moment)
 
 ### String formatting
 

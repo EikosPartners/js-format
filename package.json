@@ -1,6 +1,6 @@
 {
   "name": "js-format",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "data formatting",
   "main": "index.js",
   "repository": {
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/tsu-complete/js-format#readme",
   "dependencies": {
-    "datef": "^2.0.0",
+    "moment": "^2.10.6",
     "mustache": "^2.1.2",
     "numeral": "^1.5.3"
   },

@@ -1,6 +1,6 @@
 {
   "name": "js-format",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "homepage": "https://github.com/tsu-complete/js-format",
   "authors": [
     "tsukumo"
@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "datef": "master",
+    "moment": "~2.10.6",
     "mustache": "~2.1.2",
     "numeral": "~1.5.3"
   }

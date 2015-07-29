@@ -10,17 +10,17 @@
     ;
 
     if ("function" === typeof define && define.amd) {
-        define(["datef", "numeral", "mustache"], generate);
+        define(["moment", "numeral", "mustache"], generate);
     } else if ("undefined" !== typeof module) {
         module.exports = generate(
-            require("datef")
+            require("moment")
         ,   require("numeral")
         ,   require("mustache")
         );
     } else {
         _old = window[name];
         _new = generate(
-            window.datef
+            window.moment
         ,   window.numeral
         ,   window.Mustache
         );
@@ -31,23 +31,20 @@
         };
     }
 
-})(function ( _datef, _numeral, _mustache ) {
+})(function ( _moment, _numeral, _mustache ) {
     "use strict";
 
     var datef, numberf, objectf;
 
     datef = {
-        format: function ( format, raw ) {
-            return _datef(format, raw);
+        format: function ( format, object ) {
+            return object.format(format);
         }
     ,   cast: function ( raw ) {
-            if (!(raw instanceof Date)) {
-                raw = new Date(raw);
-            }
-            return raw;
+            return _moment(raw);
         }
     ,   i18n: function ( language ) {
-            _datef.lang(language);
+            _moment.locale(language);
         }
     };
 
@@ -146,7 +143,7 @@
 
         if (options.type) {
             fn = formatter[options.type];
-            if ("object" !== typeof fn) {
+            if ("function" !== typeof fn) {
                 throw new TypeError(
                     "format: unsupported type;" + options.type);
             }
