@@ -23,3 +23,12 @@
 
 - replace datef with moment
 
+# v3.1.1
+
+- change last audit phase to return previous value and not empty string
+
+# v3.1.2
+
+- don't cast moment in datef cast function
+- fix type specifier looking for function instead of object
+

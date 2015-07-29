@@ -41,7 +41,7 @@
             return object.format(format);
         }
     ,   cast: function ( raw ) {
-            return _moment(raw);
+            return raw._isAMomentObject ? raw : _moment(raw);
         }
     ,   i18n: function ( language ) {
             _moment.locale(language);
@@ -146,7 +146,7 @@
 
         if (options.type) {
             fn = formatter[options.type];
-            if ("function" !== typeof fn) {
+            if ("object" !== typeof fn) {
                 throw new TypeError(
                     "format: unsupported type;" + options.type);
             }
