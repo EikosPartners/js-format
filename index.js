@@ -3,8 +3,7 @@
     "use strict";
 
     var name = "format"
-    ,   _old
-    ,   _new
+    ,   _old, _new
     ,   generate = function ( ) {
             return factory.call(null, normalize.apply(null, arguments));
         }
@@ -37,37 +36,43 @@
 
     var datef, numberf, objectf;
 
-    datef = function ( format, raw ) {
-        return _datef(format, raw);
-    };
-    datef.cast = function ( raw ) {
-        if (!(raw instanceof Date)) {
-            raw = new Date(raw);
+    datef = {
+        format: function ( format, raw ) {
+            return _datef(format, raw);
         }
-        return raw;
-    };
-    datef.i18n = function ( language ) {
-        _datef.lang(language);
+    ,   cast: function ( raw ) {
+            if (!(raw instanceof Date)) {
+                raw = new Date(raw);
+            }
+            return raw;
+        }
+    ,   i18n: function ( language ) {
+            _datef.lang(language);
+        }
     };
 
-    numberf = function ( format, raw ) {
-        return _numeral(raw).format(format);
-    };
-    numberf.cast = function ( raw ) {
-        if ("number" !== typeof raw) {
-            raw = Number(raw);
+    numberf = {
+        format: function ( format, object ) {
+            return object.format(format);
         }
-        return raw;
-    };
-    numberf.i18n = function ( language ) {
-        _numeral.language(language);
+    ,   cast: function ( raw ) {
+            if ("number" !== typeof raw) {
+                raw = Number(raw);
+            }
+            return _numeral(raw);
+        }
+    ,   i18n: function ( language ) {
+            _numeral.language(language);
+        }
     };
 
-    objectf = function ( format, raw ) {
-        return _mustache.render(format, raw);
-    };
-    objectf.cast = function ( raw ) {
-        return Object(raw);
+    objectf = {
+        format: function ( format, raw ) {
+            return _mustache.render(format, raw);
+        }
+    ,   cast: function ( raw ) {
+            return Object(raw);
+        }
     };
 
     return {
@@ -79,11 +84,18 @@
 }, function ( formatters ) {
     "use strict";
 
-    var _normalize, _formatter, formatter, name;
+    var _normalize, _formatter, _audit, formatter, name;
 
-    formatter = function ( format, raw, options, after ) {
-        return _formatter(raw, _normalize(format, options, after));
+    formatter = function ( format, raw, options ) {
+        return _formatter(raw, _normalize(format, options));
     };
+
+    // occurs before
+    formatter.PHASE_0 = 0;
+    // occurs after cast
+    formatter.PHASE_1 = 1;
+    // occurs after format
+    formatter.PHASE_2 = 2;
 
     // provide direct formatters and type constants
     for (name in formatters) {
@@ -93,27 +105,36 @@
         }
     }
 
-    _formatter = function ( raw, options ) {
-        if ("function" === typeof options.before) {
-            raw = options.before(raw);
+    _audit = function ( options, raw, phase, unless ) {
+        if ("function" === typeof options.audit) {
+            raw = options.audit(raw, phase);
+            if (raw == null) {
+                return unless;
+            }
         }
+        return raw;
+    };
+
+    _formatter = function ( raw, options ) {
+        raw = _audit(options, raw, formatter.PHASE_0, raw);
+
+        raw = options.cast(raw);
+
+        raw = _audit(options, raw, formatter.PHASE_1, raw);
 
         raw = options.format(raw);
 
-        if ("function" === typeof options.after) {
-            raw = options.after(raw);
-        }
+        raw = _audit(options, raw, formatter.PHASE_2, "");
 
         return raw;
     };
 
-    _normalize = function ( format, options, after ) {
+    _normalize = function ( format, options ) {
         var fn;
 
         if ("function" === typeof options) {
             options = {
-                before: options
-            ,   after: after
+                audit: options
             };
         } else if ("string" === typeof options) {
             options = {
@@ -125,40 +146,45 @@
 
         if (options.type) {
             fn = formatter[options.type];
-            if ("function" !== typeof fn) {
+            if ("object" !== typeof fn) {
                 throw new TypeError(
                     "format: unsupported type;" + options.type);
             }
-            options.format = function ( raw ) {
-                return fn(format, fn.cast(raw));
+            options.cast = fn.cast;
+            options.format = function ( object ) {
+                return fn.format(format, object);
             };
         } else {
-            options.format = function ( raw ) {
-                var type;
+            options.cast = function ( object ) {
+                var _fn;
 
-                if (raw instanceof Date) {
-                    type = formatter.DATE;
-                } else if ("number" === typeof raw) {
-                    type = formatter.NUMBER;
-                } else if ("object" === typeof raw) {
-                    type = formatter.OBJECT;
+                if (object instanceof Date) {
+                    _fn = formatter.DATE;
+                } else if ("number" === typeof object) {
+                    _fn = formatter.NUMBER;
+                } else if ("object" === typeof object) {
+                    _fn = formatter.OBJECT;
                 }
 
-                type = formatter[type];
-                if (!type) {
+                _fn = formatter[_fn];
+                if (!_fn) {
                     throw new TypeError(
-                        "format: unsupported type;" + options.type);
+                        "format: unsupported type; " + typeof object);
                 }
 
-                return type(format, raw);
+                options.format = function ( raw ) {
+                    return _fn.format(format, raw);
+                };
+
+                return _fn.cast(object);
             };
         }
 
         return options;
     };
 
-    formatter.create = function ( format, options, after ) {
-        options = _normalize(format, options, after);
+    formatter.create = function ( format, options ) {
+        options = _normalize(format, options);
 
         return function ( raw ) {
             return _formatter(raw, options);

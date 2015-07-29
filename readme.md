@@ -10,6 +10,14 @@ js-format [![LICENSE](https://img.shields.io/github/license/tsu-complete/js-form
 Usage
 ---
 
+```
+format string(format) *(value) [object(options)|string(type)|function(audit)]
+
+options
+    audit {Function} called in three phases (see below)
+    type    {String} will cast the passed object, useful if auto detect may fail
+```
+
 ```js
 format("MM.YYYY", new Date());
 
@@ -17,8 +25,15 @@ format("(0.0a)", "-4.0e12", format.NUMBER);
 
 format("({{status}}!)", { status: "Success" });
 
-var currency_formatter = format.create("($0.00a)", Number, function ( value ) {
-    return value.toUpperCase();
+var currency_formatter = format.create("($0.00a)", function ( value, phase ) {
+    switch (phase) {
+        case format.PHASE_0: // before
+            return Number(value);
+        case format.PHASE_1: // after cast
+            return value;
+        case format.PHASE_2: // after format
+            return value.toUpperCase();
+    }
 });
 
 currency_formatter(-4000);

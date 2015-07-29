@@ -13,3 +13,9 @@
 
 - fix fatal bug (objects are not arrays)
 
+# v3.0.0
+
+- refactor api, remove before and after
+- replace with audit and phases
+- change normalization from functions to objects
+
